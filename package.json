@@ -1,0 +1,23 @@
+{
+  "name": "restify-cli",
+  "version": "0.1.0",
+  "description": "Restify cli",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/opeolluwa/restify-cli"
+  },
+  "author": "Adeoye Adefemi Opeoluwa",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^5.0.0",
+    "commander": "^9.0.0",
+    "prompt": "^1.2.1",
+    "prompt-radio": "^1.2.1",
+    "yargs": "^17.3.1"
+  }
+}
