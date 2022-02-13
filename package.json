@@ -7,6 +7,9 @@
     "dev": "nodemon index.js",
     "start": "node index.js"
   },
+  "bin": {
+    "restify": "index.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/opeolluwa/restify-cli"
@@ -14,10 +17,12 @@
   "author": "Adeoye Adefemi Opeoluwa",
   "license": "ISC",
   "dependencies": {
-    "chalk": "^5.0.0",
+    "chalk": "^4.0.0",
     "commander": "^9.0.0",
+    "multiselect-prompt": "^0.3.2",
     "prompt": "^1.2.1",
     "prompt-radio": "^1.2.1",
+    "prompts": "^2.4.2",
     "yargs": "^17.3.1"
   }
 }
