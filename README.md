@@ -14,9 +14,7 @@ A RESTful API generator built on Node and SQL databases using EXpress.js and seq
 
 
 ## Demo
-
-Checkout a live [demo](https://uuidstamps.mdbgo.io)
-
+![demo](./demo.gif)
 
 ## Environment Variables
 
