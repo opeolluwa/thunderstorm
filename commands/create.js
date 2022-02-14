@@ -24,7 +24,7 @@ async function create() {
             //prompt user for name of application
             type: 'text',
             name: 'name',
-            message: chalk.yellow('Name of application ?')
+            message: 'Name of application ?'
         },
 
         {
@@ -46,39 +46,39 @@ async function create() {
             //prompt user for application entry point default to (index.js)
             type: 'text',
             name: 'entry',
-            message: chalk.yellow('Application Entry point (index.js) ?')
+            message: 'Application Entry point (index.js) ?'
         },
 
         {
             //prompt user for name of application
             type: 'text',
             name: 'description',
-            message: chalk.yellow('Application Description ?')
+            message: 'Application Description ?'
         },
         {
             //prompt user for name of application
             type: 'text',
             name: 'version',
-            message: chalk.yellow('Application version number (1.0.0) ?')
+            message: 'Application version number (1.0.0) ?'
         },
         {
             //prompt user for name of application
             type: 'text',
             name: 'license',
-            message: chalk.yellow('Application version number (ISC) ?')
+            message: 'Application version number (ISC) ?'
         },
         {
             //prompt for repo link
             type: 'text',
             name: 'repository',
-            message: chalk.yellow('Application Repository ?')
+            message: 'Application Repository ?'
         },
 
         {
             //application preset
             type: 'select',
             name: 'preset',
-            message: chalk.yellow('Please select a preset'),
+            message: 'Please select a preset',
 
             choices: [
                 { title: 'Proceed with defaults', value: 'default' },
@@ -104,7 +104,7 @@ async function create() {
 
             type: 'multiselect',
             name: 'color',
-            message: chalk.yellow('Please select a preset'),
+            message: 'Please select a preset',
             choices: [
                 { title: 'Analytics', value: 'analytics' },
                 { title: 'Contacts management', value: 'contacts' },

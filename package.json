@@ -20,6 +20,8 @@
     "chalk": "^4.0.0",
     "commander": "^9.0.0",
     "figlet": "^1.5.2",
+    "minimatch": "^4.1.1",
+    "mkdirp": "^1.0.4",
     "multiselect-prompt": "^0.3.2",
     "prompt": "^1.2.1",
     "prompt-radio": "^1.2.1",
