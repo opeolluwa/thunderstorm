@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 const figlet = require('figlet');
-const { mkdir } = require("fs");
 const { pkg } = require('../modules/package');
+const mkdirp = require('mkdirp');
 const { created } = require('../modules/created');
 
 const TEMPLATE_DIR = path.join(__dirname, '..', 'templates')
@@ -142,7 +142,7 @@ async function create() {
 
 
     //copy templates
-    copyTemplateMulti('css', dir + '/public/stylesheets', '*.scss')
+    // copyTemplateMulti('css', dir + '/public/stylesheets', '*.scss')
 
     //generate app entry package.json and .gitignore
     write('package.json', JSON.stringify(pkg(application), null, 2) + '\n')
