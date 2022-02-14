@@ -1,8 +1,7 @@
 const prompts = require('prompts');
 const chalk = require('chalk');
 const figlet = require('figlet');
-const RadioSelect = require('prompt-radio');
-const multiselect = require('multiselect-prompt')
+const { mkdir } = require("fs");
 
 
 async function create() {
@@ -13,65 +12,130 @@ async function create() {
         )
     );
 
-    //prompt user for name of application
-    const response = await prompts({
-        type: 'text',
-        name: 'name',
-        message: chalk.yellow('Name of application ?')
-    });
-    //TODO: GET application name and create dir having thaT NAME
-    // console.log(response.meaning);
+    //application question to be used in creating application with restify-cli
+    const questions = [
+        {
+            //prompt user for name of application
+            type: 'text',
+            name: 'name',
+            message: chalk.yellow('Name of application ?')
+        },
 
-    //inquire the type of app to be created, default or custom
-    const radioSelect = new RadioSelect({
-        name: 'application preset',
-        message: chalk.yellow('Please select a preset'),
-        choices: [
-            'Proceed with defaults',
-            'Manually Select features'
-        ]
-    });
+        {
+            //prompt user for application entry point default to (index.js)
+            type: 'text',
+            name: 'entry',
+            message: chalk.yellow('Application Entry point (index.js) ?')
+        },
 
-    //parse user option and follow down the path
-    radioSelect.run()
-        .then(function (answer) {
-            // get the user option 
-            if (answer === "Proceed with defaults") {
-                //TODO: add default config here to generate config 
-                console.log("default");
-            }
-            if (answer === "Manually Select features") {
-                // available options
-                const applicationFeatures = [
-                    { title: 'Analytics', value: 'analytics' },
-                    { title: 'Contacts management', value: 'contacts' },
-                    { title: 'Emails', value: 'emails' },
-                    { title: 'Files Backup', value: 'files' },
-                    { title: 'News letter', value: 'letters' },
-                    { title: 'Email Templates', value: 'templates' },
-                    { title: 'User Authentication', value: 'authentication' },
-                ]
-                //selected options
-                const selected = (items) => items
-                    .filter((item) => item.selected)
-                    .map((item) => item.value)
-                //multi select generation options
-                const options = {
-                    cursor: 0,
-                    hint: '(Use arrow keys to navigate, space to select)'
-                }
+        {
+            //prompt user for name of application
+            type: 'text',
+            name: 'description',
+            message: chalk.yellow('Application Description ?')
+        },
+        {
+            //prompt user for name of application
+            type: 'text',
+            name: 'version',
+            message: chalk.yellow('Application version number (1.0.0) ?')
+        },
+        {
+            //prompt user for name of application
+            type: 'text',
+            name: 'license',
+            message: chalk.yellow('Application version number (ISC) ?')
+        },
+        {
+            //prompt for repo link
+            type: 'text',
+            name: 'repository',
+            message: chalk.yellow('Application Repository ?')
+        },
+        //application preset
+        {
+            type: 'select',
+            name: 'preset',
+            message: chalk.yellow('Please select a preset'),
 
-                multiselect(chalk.hex('#fdca00').bold('Please select a preset'), applicationFeatures, options)
-                    .on('data', (data) => console.log('Changed to', selected(data.value)))
-                    .on('abort', (items) => console.log('Aborted with', selected(items)))
-                    //TODO: get user option here
-                    .on('submit', (items) => console.log('Submitted with', selected(items)))
-            }
+            choices: [
+                { title: 'Proceed with defaults', value: 'default' },
+                { title: 'Manually Select features', value: 'manual' },
+                { title: 'Initialize a starter template', value: 'blank' }
+            ],
+        }
+    ]
+    //git this feedback to the user when the application has been created
+    //TODO: create routes controllers and 
+    //TODO: add all lib modules here
+    const createdFeedback = (appName, appEntry) => console.log(` 
+    created : ${appName}/
+    created : ${appName}/config/
+    created : ${appName}/config/config.js
+    created : ${appName}/controllers/
+    created : ${appName}/controllers/
+    created : ${appName}/lib/
+    created : ${appName}/middleware/
+    created : ${appName}/migrations/
+    created : ${appName}/models/
+    created : ${appName}/routes/
+    created : ${appName}/seeders/
+    created : ${appName}/${appEntry}.js
+    created : ${appName}/package.json
+    created : ${appName}/.gitignore
+    created : ${appName}/.env
+
+    change directory:
+      $ cd ${appName}
+    
+    install dependencies:
+      $ npm install
+    
+    run the app in development:
+      $ npm run dev
+
+      run the app in production:
+      $ npm run start
+    `);
+    ///log use application 
+    const application = await prompts(questions);
+
+
+    //pares project preset
+    if (application.preset === "default") {
+        Object.assign(application, { preset: "default" })
+    }
+    else if (application.preset === "blank") {
+        Object.assign(application, { preset: "blank" })
+    }
+    else {
+        const variant = await prompts({
+            type: 'multiselect',
+            name: 'color',
+            message: chalk.yellow('Please select a preset'),
+            choices: [
+                { title: 'Analytics', value: 'analytics' },
+                { title: 'Contacts management', value: 'contacts' },
+                { title: 'Emails', value: 'emails' },
+                { title: 'Files Backup', value: 'files' },
+                { title: 'News letter', value: 'letters' },
+                { title: 'Email Templates', value: 'templates' },
+                { title: 'User Authentication', value: 'authentication' },
+            ],
+            /*    hint: "hhha" */
         });
 
+        Object.assign(application, { preset: variant })
+    }
 
-
-
+    console.log(application);
+    createdFeedback(application.name, application.entry)
+    //get the option and create folder in present directory here
+    /*  const { name } = application;
+     mkdir(name, { recursive: true }, (err) => {
+         if (err) throw err;
+         console.log("done")
+     }); */
 };
 
 module.exports = { create }
