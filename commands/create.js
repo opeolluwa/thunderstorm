@@ -11,7 +11,10 @@ const { gitIgnoreTemplate } = require('../templates/gitignore');
 const { readmeTemplate } = require('../templates/readme');
 
 
-async function create() {
+
+
+async function create(app, { packages, env }) {
+    console.log(app, env, packages);
     //show off the applications banner 
     console.log(
         chalk.yellow(
