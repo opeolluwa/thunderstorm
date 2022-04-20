@@ -25,71 +25,111 @@ async function create() {
         {
             //prompt user for name of application
             type: 'text',
-            name: 'dir',
+            name: 'directory',
             message: 'Name of application ?'
         },
 
 
-        {
-            //prompt user for application entry point default to (index.js)
-            type: 'text',
-            name: 'entry',
-            message: 'Application Entry point (index.js) ?'
-        },
+        /*  {
+             //prompt user for application indexFile point default to (index.js)
+             type: 'text',
+             name: 'indexFile',
+             message: 'Application Entry point (index.js) ?'
+         },
+ 
+         {
+             //prompt user for name of application, this will be added to package.json description field
+             type: 'text',
+             name: 'description',
+             message: 'Application Description ?'
+         },
+         {
+             //prompt user for name of application
+             type: 'text',
+             name: 'version',
+             message: 'Application version number (1.0.0) ?'
+         },
+         {
+             //prompt user for name of application
+             type: 'text',
+             name: 'license',
+             message: 'Application version number (ISC) ?'
+         },
+         {
+             //prompt for repo link
+             type: 'text',
+             name: 'repository',
+             message: 'Application Repository ?'
+         }, */
 
         {
-            //prompt user for name of application, this will be added to package.json description field
-            type: 'text',
-            name: 'description',
-            message: 'Application Description ?'
-        },
-        {
-            //prompt user for name of application
-            type: 'text',
-            name: 'version',
-            message: 'Application version number (1.0.0) ?'
-        },
-        {
-            //prompt user for name of application
-            type: 'text',
-            name: 'license',
-            message: 'Application version number (ISC) ?'
-        },
-        {
-            //prompt for repo link
-            type: 'text',
-            name: 'repository',
-            message: 'Application Repository ?'
-        },
-
-        {
-            //application preset
+            //application preset, let user proceed with the setup they wan or choos e from existing options
             type: 'select',
             name: 'preset',
             message: 'Please select a preset',
 
             choices: [
                 { title: 'Proceed with defaults', value: 'default' },
+                { title: 'Initialize a basic template', value: 'basic' },
                 { title: 'Manually Select features', value: 'manual' },
-                { title: 'Initialize a starter template', value: 'blank' }
             ],
         }
     ]
 
-    //get user choices from the questions
-    const application = await prompts(questions);
 
-    //parse project preset, the functionality the user wants
+
+    //get user choices from the questions and parse project preset, the functionality the user wants
+    const application = await prompts(questions);
     if (application.preset === "default") {
-        Object.assign(application, { preset: "default" })
+        //get the user indexFile for other fields of the application
+        const { directory, description, indexFile, version, license, repository } = application
+
+        //if user want default create a folder with gitignore, env, model, middleware, controllers, routes and utils
+        const defaultApplication = {
+            files:
+                [{ name: 'package.json', content: JSON.stringify(pkg(application), null, 2) + '\n' },
+                { name: '.gitignore', content: gitIgnoreTemplate },
+                { name: '.env', content: envTemplate },
+                { name: 'README.md', content: readmeTemplate },
+                { name: 'Contributing.md', content: "" },
+                { name: indexFile, content: "" },
+                { name: "LICENSE", content: license },
+                ],
+            folders:
+                ['model', 'controllers', 'routes',]
+        }
+        //create files and folders based on the user preference
+        executePreference(directory, defaultApplication)
     }
-    else if (application.preset === "blank") {
-        Object.assign(application, { preset: "blank" })
+
+    else if (application.preset === "basic") {
+        //get the user indexFile for other fields of the application
+        const { directory, description, indexFile, version, license, repository } = application
+
+        //if the user want a blank project, create the directory and gitignore, env and readme, package.json
+        const basicApplication = {
+            files:
+                [{ name: 'package.json', content: JSON.stringify(pkg(application), null, 2) + '\n' },
+                { name: '.gitignore', content: gitIgnoreTemplate },
+                { name: 'README.md', content: readmeTemplate },
+                { name: indexFile, content: "" },
+                { name: "LICENSE", content: license },
+                ],
+            folders:
+                ['model', 'controllers', 'routes', 'utils', 'middleware']
+        }
+        //create files and folders based on the user preference
+        executePreference(directory, basicApplication)
     }
+
     else {
-        const variant = await prompts({
+        //get the user indexFile for other fields of the application
+        const { directory, indexFile, license, } = application
+
+        //prompt user to select the option they want
+        const customApplicationOPtion = await prompts({
             type: 'multiselect',
-            name: 'color',
+            name: 'folders',
             message: 'Please select the desired folders',
             choices: [
                 { title: 'Config', value: 'config' },
@@ -106,62 +146,27 @@ async function create() {
             ],
         });
 
-        //update the application with user choice and  an app name from a directory path, fitting npm naming requirements.
-        Object.assign(application,
-            {
-                // to be used as directory name
-                preset: variant,
-                name: application.dir
-                    .replace(/[^A-Za-z0-9.-]+/g, '-')
-                    .replace(/^[-_.]+|-+$/g, '')
-                    .toLowerCase()
-            },
+        //generate the foldername from user's choice
+        const { folders } = customApplicationOPtion;
+        const customApplication = {
+            files:
+                [{ name: 'package.json', content: JSON.stringify(pkg(application), null, 2) + '\n' },
+                { name: '.gitignore', content: gitIgnoreTemplate },
+                { name: '.env', content: envTemplate },
+                { name: 'README.md', content: readmeTemplate },
+                { name: 'Contributing.md', content: "" },
+                { name: indexFile, content: "" },
+                { name: "LICENSE", content: license },
+                ],
+            folders// computed from CustomApplicationOPtions
+        }
 
-            {
-                //create application entry point
-                preset: variant,
-                name: application.entry || "index.js"
-            },
-            {
-                //application license
-                preset: variant,
-                name: application.license || "ISC"
-            } );
-
-
-
-
+        //create files and folders based on the user preference
+        executePreference(directory, customApplication)
     }
-
-    //create config folder and copy config to it
-    // const { mane:dir, entry, license } = application
-    const dir = application.dir
-    const entry = application.entry
-    const license = application.license
-
-    mkdir(dir, 'config')
-    mkdir(dir, 'controllers')
-    mkdir(dir, 'files')
-    mkdir(dir, 'middleware')
-    mkdir(dir, 'migrations')
-    mkdir(dir, 'models')
-    mkdir(dir, 'routes')
-    mkdir(dir, 'templates')
-    mkdir(dir, 'utils')
-    mkdir(dir, 'view')
-
-
-
-    //generate app entry  point and package.json and .env
-    // write(path.join(dir, 'package.json'), JSON.stringify(pkg(application), null, 2) + '\n')
-    write(path.join(dir, 'package.json'), JSON.stringify(pkg(application), null, 2) + '\n')
-    write(path.join(dir, '.gitignore'), gitIgnoreTemplate)
-    write(path.join(dir, '.env'), envTemplate)
-    write(path.join(dir, 'README.md'), readmeTemplate)
-    write(path.join(dir, 'Contributing.md'), "")
-    write(path.join(dir, entry), "")
-    write(path.join(dir, "LICENSE"), license)
 };
+
+
 
 
 /**
@@ -174,7 +179,7 @@ async function create() {
 var MODE_0666 = parseInt('0666', 8)
 var MODE_0755 = parseInt('0755', 8)
 
-function write(file, str, mode) {
+function createFile(file, str, mode) {
     fs.writeFileSync(file, str, { mode: mode || MODE_0666 })
     console.log('   \x1b[36mcreate\x1b[0m : ' + file)
 }
@@ -195,7 +200,34 @@ function mkdir(base, dir) {
 
 
 
+/** 
+* the following functions
+* takes the user preference and set up the project directory accordingly
+* @param {option} => an object containing two {array}, the files and folders to create
+* @param {options.files} is an array of object{name, content}, the file ame and the default content
+* @param {options.folders} is an array of string, essentially names of folders to create
+*/
+function executePreference(applicationDir, options) {
+    const { files, folders } = options;
 
+    /**
+     * for each folder,
+     * execute create  folder command
+     * be sure to convert foldername to string first using String constructor
+     */
+    for (const folder of folders) {
+        mkdir(applicationDir, String(folder))
+    }
+
+    /**
+     * for each file, execute the create file command, 
+     * pass the @params  {file.name} to string constructor
+     */
+    for (const file of files) {
+        createFile(path.join(applicationDir, String(file.name)), file.content || '')
+    }
+
+}
 
 
 module.exports = { create }
