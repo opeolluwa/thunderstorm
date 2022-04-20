@@ -1,4 +1,5 @@
-const git = `
+//define git ignore templates
+const gitIgnoreTemplate = `
 
 # Created by https://www.toptal.com/developers/gitignore/api/node
 # Edit at https://www.toptal.com/developers/gitignore?templates=node
@@ -150,4 +151,4 @@ dist
 `
 
 
-module.exports = { git }
+module.exports = { gitIgnoreTemplate }

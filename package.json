@@ -1,7 +1,7 @@
 {
-  "name": "restify-cli",
-  "version": "0.1.0",
-  "description": "Restify cli",
+  "name": "thunderstorm",
+  "version": "1.0.0",
+  "description": "A Command Line tool for setting up server side application",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",

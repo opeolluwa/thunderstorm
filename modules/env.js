@@ -1,0 +1,11 @@
+const envTemplate = `
+DATABASE_CONNECTION_URI =
+DATABASE_USER =
+DATABASE_CLIENT =
+DATABASE_ACCESS_KEY =
+SESSION_SECRET = 
+JWT_KEY = 
+`
+
+
+module.exports = { envTemplate }

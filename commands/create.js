@@ -1,47 +1,35 @@
 const prompts = require('prompts');
 const fs = require('fs');
+const fsAsync = require('fs/promises');
 const path = require('path');
 const chalk = require('chalk');
 const figlet = require('figlet');
 const { pkg } = require('../modules/package');
 const mkdirp = require('mkdirp');
-const { created } = require('../modules/created');
+const { envTemplate } = require('../modules/env');
+const { gitIgnoreTemplate } = require('../modules/gitignore');
+const { readmeTemplate } = require('../modules/readme');
 
-const TEMPLATE_DIR = path.join(__dirname, '..', 'templates')
 
 async function create() {
-    //show off banner 
+    //show off the applications banner 
     console.log(
         chalk.yellow(
-            figlet.textSync('RESTify', { horizontalLayout: 'full', })
+            figlet.textSync('frost', { horizontalLayout: 'full', })
         )
     );
 
 
-    //application question to be used in creating application with restify-cli
+    //application question to be used in creating application with cli
     const questions = [
         {
             //prompt user for name of application
             type: 'text',
-            name: 'name',
+            name: 'dir',
             message: 'Name of application ?'
         },
 
-        {
-            //database type
-            type: 'autocomplete',
-            name: 'database',
-            message: 'Pick a database for the project',
-            choices: [
-                { title: 'MongoDb', value: 'mongodb' },
-                { title: 'MySQL', value: 'mysql' },
-                { title: 'SQLite', value: 'sqlite' },
-                { title: 'Oracle', value: 'oracle' },
-                { title: 'MsQL', value: 'mysql' },
-                { title: 'Redis', value: 'redis' },
-                { title: 'Cassandra', value: 'cassandra' },
-            ]
-        },
+
         {
             //prompt user for application entry point default to (index.js)
             type: 'text',
@@ -50,7 +38,7 @@ async function create() {
         },
 
         {
-            //prompt user for name of application
+            //prompt user for name of application, this will be added to package.json description field
             type: 'text',
             name: 'description',
             message: 'Application Description ?'
@@ -88,7 +76,7 @@ async function create() {
         }
     ]
 
-    //log use application 
+    //get user choices from the questions
     const application = await prompts(questions);
 
     //parse project preset, the functionality the user wants
@@ -100,75 +88,79 @@ async function create() {
     }
     else {
         const variant = await prompts({
-
-
             type: 'multiselect',
             name: 'color',
-            message: 'Please select a preset',
+            message: 'Please select the desired folders',
             choices: [
-                { title: 'Analytics', value: 'analytics' },
-                { title: 'Contacts management', value: 'contacts' },
-                { title: 'Emails', value: 'emails' },
+                { title: 'Config', value: 'config' },
+                { title: 'Controller', value: 'controller' },
                 { title: 'Files Backup', value: 'files' },
-                { title: 'News letter', value: 'letters' },
+                { title: 'Middleware', value: 'middleware' },
+                { title: 'Database Migrations', value: 'migrations' },
+                { title: 'Models', value: 'models' },
+                { title: 'Routes', value: 'routes' },
                 { title: 'Email Templates', value: 'templates' },
-                { title: 'User Authentication', value: 'authentication' },
+                { title: 'Utils', value: 'utils' },
+                { title: 'Views', value: 'view' },
+
             ],
         });
 
         //update the application with user choice and  an app name from a directory path, fitting npm naming requirements.
-        Object.assign(application, {
-            preset: variant,
-            name: application.name
-                .replace(/[^A-Za-z0-9.-]+/g, '-')
-                .replace(/^[-_.]+|-+$/g, '')
-                .toLowerCase()
-        })
+        Object.assign(application,
+            {
+                // to be used as directory name
+                preset: variant,
+                name: application.dir
+                    .replace(/[^A-Za-z0-9.-]+/g, '-')
+                    .replace(/^[-_.]+|-+$/g, '')
+                    .toLowerCase()
+            },
+
+            {
+                //create application entry point
+                preset: variant,
+                name: application.entry || "index.js"
+            },
+            {
+                //application license
+                preset: variant,
+                name: application.license || "ISC"
+            } );
+
+
+
+
     }
 
-    const dir = application.name
-
     //create config folder and copy config to it
+    // const { mane:dir, entry, license } = application
+    const dir = application.dir
+    const entry = application.entry
+    const license = application.license
+
     mkdir(dir, 'config')
     mkdir(dir, 'controllers')
-    mkdir(dir, 'lib')
+    mkdir(dir, 'files')
     mkdir(dir, 'middleware')
     mkdir(dir, 'migrations')
     mkdir(dir, 'models')
     mkdir(dir, 'routes')
-    mkdir(dir, 'seeders')
     mkdir(dir, 'templates')
+    mkdir(dir, 'utils')
+    mkdir(dir, 'view')
 
 
 
-    //copy templates
-    // copyTemplateMulti('css', dir + '/public/stylesheets', '*.scss')
-
-    //generate app entry package.json and .gitignore
-    write('package.json', JSON.stringify(pkg(application), null, 2) + '\n')
-    // write(path.join(dir, 'app.js'), app.render())
-    // write(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n')
-    // mkdir(dir, 'bin')
-    // write(path.join(dir, 'bin/www'), www.render(), MODE_0755)
-    console.log(application);
-    /*{
-        name: '',
-        value: 'cassandra',
-        entry: '',
-        description: '',
-        version: '',
-        license: '',
-        repository: '',
-        preset: 'default'
-      }*/
-
-
-    //give  this feedback  (the files and folders ) to the user when the application has been created, 
-
-    created(application.name, application.entry)
-
-    //TODO: make directory here
-    //TODO: copy files here
+    //generate app entry  point and package.json and .env
+    // write(path.join(dir, 'package.json'), JSON.stringify(pkg(application), null, 2) + '\n')
+    write(path.join(dir, 'package.json'), JSON.stringify(pkg(application), null, 2) + '\n')
+    write(path.join(dir, '.gitignore'), gitIgnoreTemplate)
+    write(path.join(dir, '.env'), envTemplate)
+    write(path.join(dir, 'README.md'), readmeTemplate)
+    write(path.join(dir, 'Contributing.md'), "")
+    write(path.join(dir, entry), "")
+    write(path.join(dir, "LICENSE"), license)
 };
 
 
@@ -203,26 +195,7 @@ function mkdir(base, dir) {
 
 
 
-/**
- * Copy file from template directory.
- */
 
-function copyTemplate(from, to) {
-    write(to, fs.readFileSync(path.join(TEMPLATE_DIR, from), 'utf-8'))
-}
 
-/**
- * Copy multiple files from template directory.
- */
-
-function copyTemplateMulti(fromDir, toDir, nameGlob) {
-    fs.readdirSync(path.join(TEMPLATE_DIR, fromDir))
-        .filter(minimatch.filter(nameGlob, { matchBase: true }))
-        .forEach(function (name) {
-            copyTemplate(path.join(fromDir, name), path.join(toDir, name))
-        })
-}
-
-// copyTemplateMulti('css', dir + '/public/stylesheets', '*.less')
 
 module.exports = { create }
