@@ -1,10 +1,14 @@
-const pkg = {
-    "name": "",
-    "version": "",
-    "description": "",
+
+// const fields = { name: "", entry: "", version: "1.0.0", description: "", author: "", database, license }
+//package.json template  generator
+const pkg = (fields) => ({
+
+    "name": fields.directory,
+    "version": fields.version,
+    "description": fields.description,
     "scripts": {
-        "start": "node index.js",
-        "dev": "nodemon index.js"
+        "start": `node ${fields.entry}`,
+        "dev": `nodemon ${fields.entry}`
     },
     "dependencies": {
         "cors": "^2.8.5",
@@ -27,10 +31,11 @@ const pkg = {
     },
     "keywords": [
     ],
-    "author": "",
-    "license": "MIT",
+    "author": fields.author,
+    "license": fields.license,
     "bugs": {
         "url": ""
     },
     "homepage": ""
-}
+})
+module.exports = { pkg }

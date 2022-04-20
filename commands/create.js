@@ -4,11 +4,11 @@ const fsAsync = require('fs/promises');
 const path = require('path');
 const chalk = require('chalk');
 const figlet = require('figlet');
-const { pkg } = require('../modules/package');
+const { pkg } = require('../templates/package');
 const mkdirp = require('mkdirp');
-const { envTemplate } = require('../modules/env');
-const { gitIgnoreTemplate } = require('../modules/gitignore');
-const { readmeTemplate } = require('../modules/readme');
+const { envTemplate } = require('../templates/env');
+const { gitIgnoreTemplate } = require('../templates/gitignore');
+const { readmeTemplate } = require('../templates/readme');
 
 
 async function create() {
@@ -29,38 +29,37 @@ async function create() {
             message: 'Name of application ?'
         },
 
+        {
+            //prompt user for application indexFile point default to (index.js)
+            type: 'text',
+            name: 'indexFile',
+            message: 'Application Entry point (index.js) ?'
+        },
 
-        /*  {
-             //prompt user for application indexFile point default to (index.js)
-             type: 'text',
-             name: 'indexFile',
-             message: 'Application Entry point (index.js) ?'
-         },
- 
-         {
-             //prompt user for name of application, this will be added to package.json description field
-             type: 'text',
-             name: 'description',
-             message: 'Application Description ?'
-         },
-         {
-             //prompt user for name of application
-             type: 'text',
-             name: 'version',
-             message: 'Application version number (1.0.0) ?'
-         },
-         {
-             //prompt user for name of application
-             type: 'text',
-             name: 'license',
-             message: 'Application version number (ISC) ?'
-         },
-         {
-             //prompt for repo link
-             type: 'text',
-             name: 'repository',
-             message: 'Application Repository ?'
-         }, */
+        {
+            //prompt user for name of application, this will be added to package.json description field
+            type: 'text',
+            name: 'description',
+            message: 'Application Description ?'
+        },
+        {
+            //prompt user for name of application
+            type: 'text',
+            name: 'version',
+            message: 'Application version number (1.0.0) ?'
+        },
+        {
+            //prompt user for name of application
+            type: 'text',
+            name: 'license',
+            message: 'Application version number (ISC) ?'
+        },
+        {
+            //prompt for repo link
+            type: 'text',
+            name: 'repository',
+            message: 'Application Repository ?'
+        },
 
         {
             //application preset, let user proceed with the setup they wan or choos e from existing options
@@ -92,7 +91,11 @@ async function create() {
                 { name: '.env', content: envTemplate },
                 { name: 'README.md', content: readmeTemplate },
                 { name: 'Contributing.md', content: "" },
-                { name: indexFile, content: "" },
+                {
+                    name: indexFile.replace(/[^A-Za-z0-9.-]+/g, '-')
+                        .replace(/^[-_.]+|-+$/g, '')
+                        .toLowerCase(), content: ""
+                },
                 { name: "LICENSE", content: license },
                 ],
             folders:
@@ -112,7 +115,11 @@ async function create() {
                 [{ name: 'package.json', content: JSON.stringify(pkg(application), null, 2) + '\n' },
                 { name: '.gitignore', content: gitIgnoreTemplate },
                 { name: 'README.md', content: readmeTemplate },
-                { name: indexFile, content: "" },
+                {
+                    name: indexFile.replace(/[^A-Za-z0-9.-]+/g, '-')
+                        .replace(/^[-_.]+|-+$/g, '')
+                        .toLowerCase(), content: ""
+                },
                 { name: "LICENSE", content: license },
                 ],
             folders:
@@ -134,9 +141,9 @@ async function create() {
             choices: [
                 { title: 'Config', value: 'config' },
                 { title: 'Controller', value: 'controller' },
+                { title: 'Database Migrations', value: 'migrations' },
                 { title: 'Files Backup', value: 'files' },
                 { title: 'Middleware', value: 'middleware' },
-                { title: 'Database Migrations', value: 'migrations' },
                 { title: 'Models', value: 'models' },
                 { title: 'Routes', value: 'routes' },
                 { title: 'Email Templates', value: 'templates' },
@@ -155,7 +162,11 @@ async function create() {
                 { name: '.env', content: envTemplate },
                 { name: 'README.md', content: readmeTemplate },
                 { name: 'Contributing.md', content: "" },
-                { name: indexFile, content: "" },
+                {
+                    name: indexFile.replace(/[^A-Za-z0-9.-]+/g, '-')
+                        .replace(/^[-_.]+|-+$/g, '')
+                        .toLowerCase(), content: ""
+                },
                 { name: "LICENSE", content: license },
                 ],
             folders// computed from CustomApplicationOPtions
