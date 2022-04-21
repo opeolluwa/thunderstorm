@@ -1,6 +1,6 @@
 {
   "name": "@opeolluwa/thunderstorm",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "A Command Line tool for setting up server side application",
   "main": "index.js",
   "scripts": {
