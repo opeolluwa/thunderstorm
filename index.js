@@ -14,12 +14,12 @@ program
     .command('init <application>')
     .description('create a new project project')
     .option('-p, --packages [packages...]', 'project dependencies. Dependencies will be added to package.json when the template is generated')
-    .option('-e <FIELD value>, --env <FIELD value>', 'comma separated listing of environment variables field value pain. Option only available during project initialization')
-    .option('-f, --force, overwrite existing files and folder names')
+    .option('-e, --env <FIELD=value...>', 'comma separated listing of environment variables field value pain. Option only available during project initialization')
+    // .option('-f, --force, overwrite existing files and folder names')
     .action((application, options) => {
         const { packages, env } = options;
 
-        //pass the appliccation name, packages and the environment variables to the create controller
+        //pass the application name, packages and the environment variables to the create controller
         create(application, { packages, env });
     });
 

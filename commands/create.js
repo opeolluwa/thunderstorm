@@ -30,7 +30,7 @@ async function create(app, { packages, env }) {
     const APPLICATION_PACKAGES = packages ? packages : '';
     const ENVIRONMENT_VARIABLE = env ? env.join(`
 
-    `) : `${env}`;
+`) : `${env}`;
 
     // console.log(app, packages, env);
     //show off the applications banner 

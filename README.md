@@ -11,8 +11,8 @@ A Command Line tool for quickly setting up server side application
 - ships with `package.json` and eliminates need for `npm init`
 
 ## Installation
-Thunderstorm is distributed with `npm` which ships with Node.js, to begin [install Node.js](https://nodejs.org) if you don't have it installed then run `npm i -g thunderstorm`
 
+Thunderstorm is distributed with `npm` which ships with Node.js, to begin [install Node.js](https://nodejs.org) if you don't have it installed then run `npm i -g thunderstorm`
 
 ## Usage/Examples
 
@@ -39,6 +39,14 @@ $ thunderstorm init <application-name> -p <package_01> <package_02> ...
 $ thunderstorm init <application-name> -p <package_01> <package_02> ...  -e <VARIABLE_01=value_01> <VARIABLE_02=value_02> ...
 
 ```
+
+- See the initialization guide option
+
+```bash
+$ thunderstorm help init
+```
+
+- 
 
 ## Demo
 
