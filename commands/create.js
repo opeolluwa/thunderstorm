@@ -1,6 +1,5 @@
 const prompts = require('prompts');
 const fs = require('fs');
-const fsAsync = require('fs/promises');
 const path = require('path');
 const chalk = require('chalk');
 const figlet = require('figlet');
@@ -12,13 +11,37 @@ const { readmeTemplate } = require('../templates/readme');
 
 
 
-
+/**
+ * 
+ * 
+ * create an asynchronous function to take user preference,
+ * @param {app} application_name, the application is parsed from the init command =>$ thunderstorm init <app>
+ * @param {packages} application_dependencies, specified with -p or --packages option => $ thunderstorm init <app> -p express passport dotenv 
+ * @param {env} application_environment_variables parsed from the init command=> $  thunderstorm init <app> -e JWT_KEY=the-old-witches SESSION_SECRET=wall-lock-of-nivana
+ * 
+ * 
+ * the function inquire the user preference and generate the project accordingly
+ * the application name parsed from the init command is used to set up the project directory
+ * 
+ */
 async function create(app, { packages, env }) {
-    console.log(app, env, packages);
+    //decouple the parsed argument
+    const APPLICATION_NAME = app;
+    const APPLICATION_PACKAGES = packages ? packages : '';
+    const ENVIRONMENT_VARIABLE = env ? env.join(`
+
+    `) : `${env}`;
+
+    // console.log(app, packages, env);
     //show off the applications banner 
     console.log(
         chalk.yellow(
-            figlet.textSync('frost', { horizontalLayout: 'full', })
+            figlet.textSync('thunderstorm', {
+                horizontalLayout: 'fitted',
+                verticalLayout: 'default',
+                width: 80,
+                whitespaceBreak: true
+            })
         )
     );
 
@@ -28,15 +51,17 @@ async function create(app, { packages, env }) {
         {
             //prompt user for name of application
             type: 'text',
-            name: 'directory',
-            message: 'Name of application ?'
+            name: 'registry',
+            message: 'Package manager default to (npm)',
+            initial: 'npm'
         },
 
         {
             //prompt user for application indexFile point default to (index.js)
             type: 'text',
             name: 'indexFile',
-            message: 'Application Entry point (index.js) ?'
+            message: 'Application entry point, default to (index.js) ?',
+            initial: 'index.js'
         },
 
         {
@@ -49,13 +74,15 @@ async function create(app, { packages, env }) {
             //prompt user for name of application
             type: 'text',
             name: 'version',
-            message: 'Application version number (1.0.0) ?'
+            message: 'Application version number, default to (1.0.0)',
+            initial: '1.0.0'
         },
         {
             //prompt user for name of application
             type: 'text',
             name: 'license',
-            message: 'Application version number (ISC) ?'
+            message: 'Application version number ? Default to (ISC)',
+            initial: 'ISC'
         },
         {
             //prompt for repo link
@@ -84,14 +111,21 @@ async function create(app, { packages, env }) {
     const application = await prompts(questions);
     if (application.preset === "default") {
         //get the user indexFile for other fields of the application
-        const { directory, description, indexFile, version, license, repository } = application
+        let { registry, indexFile, license } = application;
+
+        //make package manger available globally 
+        packageManager = registry;
+        //set the defaults 
+        indexFile = !indexFile ? 'index.js' : indexFile;
+        registry = !registry ? 'npm' : registry;
+        license = !license ? 'ISC' : license;
 
         //if user want default create a folder with gitignore, env, model, middleware, controllers, routes and utils
         const defaultApplication = {
             files:
                 [{ name: 'package.json', content: JSON.stringify(pkg(application), null, 2) + '\n' },
                 { name: '.gitignore', content: gitIgnoreTemplate },
-                { name: '.env', content: envTemplate },
+                { name: '.env', content: ENVIRONMENT_VARIABLE },
                 { name: 'README.md', content: readmeTemplate },
                 { name: 'Contributing.md', content: "" },
                 {
@@ -100,17 +134,23 @@ async function create(app, { packages, env }) {
                         .toLowerCase(), content: ""
                 },
                 { name: "LICENSE", content: license },
+                { name: "install.sh", content: `${registry.toLowerCase() === 'npm' ? registry.toLowerCase() + ' ' + 'install' : 'yarn add'}  ${APPLICATION_PACKAGES.join(' ')}` },
                 ],
             folders:
-                ['model', 'controllers', 'routes',]
+                ['model', 'controllers', 'routes', 'lib']
         }
         //create files and folders based on the user preference
-        executePreference(directory, defaultApplication)
+        executePreference(APPLICATION_NAME, defaultApplication)
     }
 
     else if (application.preset === "basic") {
         //get the user indexFile for other fields of the application
-        const { directory, description, indexFile, version, license, repository } = application
+        let { registry, indexFile, license } = application;
+        //set the defaults 
+        indexFile = !indexFile ? 'index.js' : indexFile;
+        registry = !registry ? 'npm' : registry;
+        license = !license ? 'ISC' : license;
+
 
         //if the user want a blank project, create the directory and gitignore, env and readme, package.json
         const basicApplication = {
@@ -124,17 +164,23 @@ async function create(app, { packages, env }) {
                         .toLowerCase(), content: ""
                 },
                 { name: "LICENSE", content: license },
+                { name: "install.sh", content: `${registry.toLowerCase() === 'npm' ? registry.toLowerCase() + ' ' + 'install' : 'yarn add'}  ${APPLICATION_PACKAGES.join(' ')}` },
                 ],
             folders:
-                ['model', 'controllers', 'routes', 'utils', 'middleware']
+                ['model', 'controllers', 'routes', 'utils', 'middleware', 'lib']
         }
         //create files and folders based on the user preference
-        executePreference(directory, basicApplication)
+        executePreference(APPLICATION_NAME, basicApplication)
     }
 
     else {
         //get the user indexFile for other fields of the application
-        const { directory, indexFile, license, } = application
+        let { registry, indexFile, license } = application;
+        //set the defaults 
+        indexFile = !indexFile ? 'index.js' : indexFile;
+        registry = !registry ? 'npm' : registry;
+        license = !license ? 'ISC' : license;
+
 
         //prompt user to select the option they want
         const customApplicationOPtion = await prompts({
@@ -148,6 +194,7 @@ async function create(app, { packages, env }) {
                 { title: 'Files Backup', value: 'files' },
                 { title: 'Middleware', value: 'middleware' },
                 { title: 'Models', value: 'models' },
+                { title: 'Library and Classes', value: 'lib' },
                 { title: 'Routes', value: 'routes' },
                 { title: 'Email Templates', value: 'templates' },
                 { title: 'Utils', value: 'utils' },
@@ -162,7 +209,7 @@ async function create(app, { packages, env }) {
             files:
                 [{ name: 'package.json', content: JSON.stringify(pkg(application), null, 2) + '\n' },
                 { name: '.gitignore', content: gitIgnoreTemplate },
-                { name: '.env', content: envTemplate },
+                { name: '.env', content: ENVIRONMENT_VARIABLE },
                 { name: 'README.md', content: readmeTemplate },
                 { name: 'Contributing.md', content: "" },
                 {
@@ -171,13 +218,31 @@ async function create(app, { packages, env }) {
                         .toLowerCase(), content: ""
                 },
                 { name: "LICENSE", content: license },
+                { name: "install.sh", content: `${registry.toLowerCase() === 'npm' ? registry.toLowerCase() + ' ' + 'install' : 'yarn add'}  ${APPLICATION_PACKAGES.join(' ')}` },
                 ],
             folders// computed from CustomApplicationOPtions
         }
 
         //create files and folders based on the user preference
-        executePreference(directory, customApplication)
+        executePreference(APPLICATION_NAME, customApplication)
     }
+
+    //installation prompt
+    console.log(
+        chalk.yellow(
+            `${APPLICATION_NAME} 📦 generated!             
+            `
+        ))
+    console.log('to begin, ensure you have bash shell installed \nthen run the following commands')
+    console.log(
+        chalk.yellow(
+            `
+            cd ${APPLICATION_NAME} 
+            ${application.registry.toLowerCase() === 'npm' ? 'npm run make' : 'yarn make'}
+            `
+        )
+    );
+    console.log('if not copy \nthe content of \`install.sh\` to your default shell then press \`Enter\`');
 };
 
 
@@ -243,5 +308,9 @@ function executePreference(applicationDir, options) {
 
 }
 
+/**
+ * 
+ * 
+ */
 
 module.exports = { create }
