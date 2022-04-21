@@ -1,81 +1,61 @@
+# ThunderStorm
 
-# RESTIFY CLI
+A Command Line tool for quickly setting up server side application
 
-A RESTful API generator built on Node and SQL databases using EXpress.js and sequelize orm
 ## Features
 
-- Light/dark mode toggle
-- Live previews
-- Fullscreen mode
-- Cross platform
-
-
-[![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/tterb/atomic-design-ui/blob/master/LICENSEs)
-
-
-## Demo
-![demo](./demo.gif)
-
-## Environment Variables
-
-To run this project, you will need to add the following environment variables to your .env file
-
-`DB_HOST`
-`DB_USER`
-`DB_PASS`
-`DB_SCHEMA`
-
-
-## CLI Reference
-
-
-
-## Deployment
-
-To deploy this project run
-
-```bash
-  npm run deploy
-```
-
+- Simple
+- Lightweight
+- creates folders using best practice
+- initialize project with packages
+- ships with `package.json` and eliminates need for `npm init`
 
 ## Installation
-Build the project
-
-```bash
-  npm install my-project
-  cd my-project
-```
-    
-## License
-
-[MIT](https://choosealicense.com/licenses/mit/)
+Thunderstorm is distributed with `npm` which ships with Node.js, to begin [install Node.js](https://nodejs.org) if you don't have it installed then run `npm i -g thunderstorm`
 
 
 ## Usage/Examples
 
+`thunderstorm` uses `bash` under the hood to execute package installation of application dependencies. Ensure to install `bash` shell before you execute `npm run make` or `yarn make`, depending on your preferred package manager. You could choose to copy the content on `install.sh` instead and execute it in your preferred Command Line Interface (terminal) when the project has been generated
+
+- initialize a new basic project
+
 ```bash
-restify new
+$ thunderstorm init <application-name>
+
 ```
 
+- initialize a project with packages
 
-## Feedback
+```bash
+$ thunderstorm init <application-name> -p <package_01> <package_02> ...
 
-If you have any feedback, please reach out to us at fake@fake.com
+```
 
+- initialize a project with packages and environment variables
+
+```bash
+
+$ thunderstorm init <application-name> -p <package_01> <package_02> ...  -e <VARIABLE_01=value_01> <VARIABLE_02=value_02> ...
+
+```
+
+## Demo
+
+![demo](./demo.gif)
 
 ## Run Locally
 
 Clone the project
 
 ```bash
-  git clone https://link-to-project
+  git clone https://github.com/opeolluwa/thunderstorm
 ```
 
 Go to the project directory
 
 ```bash
-  cd my-project
+  cd thunderstorm
 ```
 
 Install dependencies
@@ -87,23 +67,25 @@ Install dependencies
 Start the server
 
 ```bash
-  npm run start
+  ./index.js
 ```
 
+## Contributing
 
-## Used By
+Contributions are always welcome!
 
-This project is used by the following companies:
+See `contributing.md` for ways to get started.
 
-- Company 1
-- Company 2
+Please adhere to this project's `code of conduct`.
 
+## Feedback
 
-
+If you have any feedback, please reach out to us at adefemiadeoye@yahoo.com
 
 ## 🚀 About Me
+
 **Hi, I'm Opeoluwa! 👋**
 
 A full stack developer devoted to building community projects...
 
-If you find RESTify helpful, consider [buying me pizza 🍕](https://getfidia.com/pay/opeolluwa/open-source)
+If you find ThunderStorm helpful, consider [buying me pizza 🍕](https://getfidia.com/pay/opeolluwa/open-source)
