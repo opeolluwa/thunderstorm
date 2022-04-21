@@ -50,7 +50,7 @@ $ thunderstorm help init
 
 ## Demo
 
-![demo](./demo.gif)
+![demo](./thunderstorm.png)
 
 ## Run Locally
 

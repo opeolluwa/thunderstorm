@@ -1,21 +1,22 @@
 {
-  "name": "thunderstorm",
-  "version": "1.0.0",
+  "name": "@opeolluwa/thunderstorm",
+  "version": "1.0.1",
   "description": "A Command Line tool for setting up server side application",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "publish": "npm publish --access public"
   },
   "bin": {
     "thunderstorm": "index.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/opeolluwa/restify-cli"
+    "url": "git+https://github.com/opeolluwa/thunderstorm.git"
   },
   "author": "Adeoye Adefemi Opeoluwa",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "chalk": "^4.0.0",
     "commander": "^9.0.0",
@@ -27,5 +28,16 @@
     "prompt-radio": "^1.2.1",
     "prompts": "^2.4.2",
     "yargs": "^17.3.1"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/opeolluwa/thunderstorm/issues"
+  },
+  "homepage": "https://github.com/opeolluwa/thunderstorm#readme",
+  "directories": {
+    "doc": "docs"
+  },
+  "devDependencies": {},
+  "keywords": [
+    "CLI"
+  ]
 }
