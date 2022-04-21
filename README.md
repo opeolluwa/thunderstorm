@@ -12,7 +12,7 @@ A Command Line tool for quickly setting up server side application
 
 ## Installation
 
-Thunderstorm is distributed with `npm` which ships with Node.js, to begin [install Node.js](https://nodejs.org) if you don't have it installed then run `npm i -g thunderstorm`
+Thunderstorm is distributed with `npm` which ships with Node.js, to begin [install Node.js](https://nodejs.org) if you don't have it installed then run `npm i -g @opeolluwa/thunderstorm`
 
 ## Usage/Examples
 
