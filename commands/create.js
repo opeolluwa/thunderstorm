@@ -126,14 +126,14 @@ async function create(app, { packages, env }) {
                 [{ name: 'package.json', content: JSON.stringify(pkg(application), null, 2) + '\n' },
                 { name: '.gitignore', content: gitIgnoreTemplate },
                 { name: '.env', content: ENVIRONMENT_VARIABLE },
-                { name: 'README.md', content: readmeTemplate },
+                { name: 'README.md', content: readmeTemplate(APPLICATION_NAME) },
                 { name: 'Contributing.md', content: "" },
                 {
                     name: indexFile.replace(/[^A-Za-z0-9.-]+/g, '-')
                         .replace(/^[-_.]+|-+$/g, '')
                         .toLowerCase(), content: ""
                 },
-                { name: "LICENSE", content: license },
+                { name: "LICENSE", content: "" },
                 { name: "install.sh", content: `${registry.toLowerCase() === 'npm' ? registry.toLowerCase() + ' ' + 'install' : 'yarn add'}  ${APPLICATION_PACKAGES.join(' ')}` },
                 ],
             folders:
@@ -157,7 +157,7 @@ async function create(app, { packages, env }) {
             files:
                 [{ name: 'package.json', content: JSON.stringify(pkg(application), null, 2) + '\n' },
                 { name: '.gitignore', content: gitIgnoreTemplate },
-                { name: 'README.md', content: readmeTemplate },
+                { name: 'README.md', content: readmeTemplate(APPLICATION_NAME) },
                 {
                     name: indexFile.replace(/[^A-Za-z0-9.-]+/g, '-')
                         .replace(/^[-_.]+|-+$/g, '')
@@ -210,7 +210,7 @@ async function create(app, { packages, env }) {
                 [{ name: 'package.json', content: JSON.stringify(pkg(application), null, 2) + '\n' },
                 { name: '.gitignore', content: gitIgnoreTemplate },
                 { name: '.env', content: ENVIRONMENT_VARIABLE },
-                { name: 'README.md', content: readmeTemplate },
+                { name: 'README.md', content: readmeTemplate(APPLICATION_NAME) },
                 { name: 'Contributing.md', content: "" },
                 {
                     name: indexFile.replace(/[^A-Za-z0-9.-]+/g, '-')
