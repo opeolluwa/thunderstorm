@@ -1,7 +1,7 @@
 {
   "name": "@opeolluwa/thunderstorm",
-  "version": "2.1.0",
-  "description": "A Command Line tool for setting up server side application",
+  "version": "2.10.0",
+  "description": "A Command Line tool for automating creation of server side application",
   "main": "index.js",
   "scripts": {
     "dev": "nodemon index.js",
@@ -9,7 +9,7 @@
     "publish": "npm publish --access public"
   },
   "bin": {
-    "thunderstorm": "bin"
+    "thunderstorm": "./bin/index.js"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,6 @@
   "directories": {
     "doc": "docs"
   },
-  "devDependencies": {},
   "keywords": [
     "CLI"
   ]
