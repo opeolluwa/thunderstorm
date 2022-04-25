@@ -6,7 +6,7 @@ const program = new Command();
 program
     .name('thunderstorm')
     .description('A Command Line tool for setting up server side application directory')
-    .version('1.0.0');
+    .version('1.01.0');
 
 
 //create new project
