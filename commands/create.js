@@ -113,7 +113,7 @@ async function create(app, { packages, env }) {
      * @param { PACKAGE_INSTALLER, APPLICATION_PACKAGES INSTALLATION_SHELL_CONTENT}
      */
     const application = await prompts(questions);
-    let { registry, indexFile, license } = application;
+    let { registry, indexFile, license, description } = application;
 
 
 
@@ -141,7 +141,7 @@ async function create(app, { packages, env }) {
                 [{ name: 'package.json', content: JSON.stringify(pkg(application), null, 2) + '\n' },
                 { name: '.gitignore', content: gitIgnoreTemplate },
                 { name: '.env', content: ENVIRONMENT_VARIABLE },
-                { name: 'README.md', content: readmeTemplate(APPLICATION_NAME) },
+                { name: 'README.md', content: readmeTemplate(APPLICATION_NAME, description) },
                 { name: 'Contributing.md', content: "" },
                 { name: STANDARDIZED_INDEX_FILE_NAME, content: "" },
                 { name: "LICENSE", content: "" },
@@ -160,7 +160,7 @@ async function create(app, { packages, env }) {
             files:
                 [{ name: 'package.json', content: JSON.stringify(pkg(application), null, 2) + '\n' },
                 { name: '.gitignore', content: gitIgnoreTemplate },
-                { name: 'README.md', content: readmeTemplate(APPLICATION_NAME) },
+                { name: 'README.md', content: readmeTemplate(APPLICATION_NAME, description) },
                 { name: STANDARDIZED_INDEX_FILE_NAME, content: "" },
                 { name: "LICENSE", content: license },
                 { name: "install.sh", content: INSTALLATION_SHELL_CONTENT },
@@ -200,7 +200,7 @@ async function create(app, { packages, env }) {
                 [{ name: 'package.json', content: JSON.stringify(pkg(application), null, 2) + '\n' },
                 { name: '.gitignore', content: gitIgnoreTemplate },
                 { name: '.env', content: ENVIRONMENT_VARIABLE },
-                { name: 'README.md', content: readmeTemplate(APPLICATION_NAME) },
+                { name: 'README.md', content: readmeTemplate(APPLICATION_NAME, description) },
                 { name: 'Contributing.md', content: "" },
                 { name: STANDARDIZED_INDEX_FILE_NAME, content: "" },
                 { name: "LICENSE", content: license },
