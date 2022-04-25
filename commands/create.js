@@ -12,25 +12,17 @@ const { readmeTemplate } = require('../templates/readme');
 
 
 /**
- * 
- * 
- * create an asynchronous function to take user preference,
- * @param {app} application_name, the application is parsed from the init command =>$ thunderstorm init <app>
- * @param {packages} application_dependencies, specified with -p or --packages option => $ thunderstorm init <app> -p express passport dotenv 
- * @param {env} application_environment_variables parsed from the init command=> $  thunderstorm init <app> -e JWT_KEY=the-old-witches SESSION_SECRET=wall-lock-of-nivana
- * 
- * 
- * the function inquire the user preference and generate the project accordingly
- * the application name parsed from the init command is used to set up the project directory
- * 
+ * create an asynchronous function to take user preference and create a template, but first
+ * 1. parse the application name (@param {app} application_name), from the init command =>$ thunderstorm init <app>
+ * 2. @param {packages} application_dependencies, specified with -p or --packages option => $ thunderstorm init <app> -p express passport dotenv 
+ * 3. @param {env} application_environment_variables parsed from the init command=> $  thunderstorm init <app> -e JWT_KEY=the-old-witches SESSION_SECRET=wall-lock-of-nivana
  */
 async function create(app, { packages, env }) {
-    //decouple the parsed argument
+    //decouple the parsed argument from the initialization command  => $ thunderstorm init <app> ... 
     const APPLICATION_NAME = app;
-    const APPLICATION_PACKAGES = packages ? packages : '';
     const ENVIRONMENT_VARIABLE = env ? env.join(`
 
-`) : `${env}`;
+`) : `${envTemplate}`;
 
     // console.log(app, packages, env);
     //show off the applications banner 
@@ -46,7 +38,7 @@ async function create(app, { packages, env }) {
     );
 
 
-    //application question to be used in creating application with cli
+    //application question to be used in compiling user choice
     const questions = [
         {
             //prompt user for name of application
@@ -92,7 +84,7 @@ async function create(app, { packages, env }) {
         },
 
         {
-            //application preset, let user proceed with the setup they wan or choos e from existing options
+            //application preset, let user proceed with the setup they wan or choose from existing options
             type: 'select',
             name: 'preset',
             message: 'Please select a preset',
@@ -106,20 +98,43 @@ async function create(app, { packages, env }) {
     ]
 
 
-
-    //get user choices from the questions and parse project preset, the functionality the user wants
+    /**
+     * get user choices from the questions and parse project preset,
+     * the parsed preset will return a javascript object @return {application}.
+     * Using this object, and the size of the application that the user wants, build the template
+     * 
+     * extract the package manager @param {registry},
+     * the entry file @param {indexFile}, default to index.js
+     * and the license type @param {license}
+     * 
+     * once these fields has been destructured from the returned object,
+     * use the fields to build constant variables for further processing,
+     * the variables to be built, include but not limited to
+     * @param { PACKAGE_INSTALLER, APPLICATION_PACKAGES INSTALLATION_SHELL_CONTENT}
+     */
     const application = await prompts(questions);
+    let { registry, indexFile, license } = application;
+
+
+
+
+    /**
+      * if the default package manager is opted for (that is npm ), use 'npm install'
+      *  else if yarn is opted for, use 'yarn add' followed by the names of the packages.
+      * Build the package installation shell content (install.sh)
+      * Standardize the index file name, default to index.js
+      */
+    const PACKAGE_INSTALLER = registry.toLowerCase() === 'npm' ?
+        'npm install ' : 'yarn add ';
+    const APPLICATION_PACKAGES = !packages ?
+        ' ' : packages.join(' ')
+    const INSTALLATION_SHELL_CONTENT = PACKAGE_INSTALLER + APPLICATION_PACKAGES;
+    const STANDARDIZED_INDEX_FILE_NAME = indexFile.replace(/[^A-Za-z0-9.-]+/g, '-')
+        .replace(/^[-_.]+|-+$/g, '')
+        .toLowerCase();
+
+    //application builder, the default option
     if (application.preset === "default") {
-        //get the user indexFile for other fields of the application
-        let { registry, indexFile, license } = application;
-
-        //make package manger available globally 
-        packageManager = registry;
-        //set the defaults 
-        indexFile = !indexFile ? 'index.js' : indexFile;
-        registry = !registry ? 'npm' : registry;
-        license = !license ? 'ISC' : license;
-
         //if user want default create a folder with gitignore, env, model, middleware, controllers, routes and utils
         const defaultApplication = {
             files:
@@ -128,13 +143,9 @@ async function create(app, { packages, env }) {
                 { name: '.env', content: ENVIRONMENT_VARIABLE },
                 { name: 'README.md', content: readmeTemplate(APPLICATION_NAME) },
                 { name: 'Contributing.md', content: "" },
-                {
-                    name: indexFile.replace(/[^A-Za-z0-9.-]+/g, '-')
-                        .replace(/^[-_.]+|-+$/g, '')
-                        .toLowerCase(), content: ""
-                },
+                { name: STANDARDIZED_INDEX_FILE_NAME, content: "" },
                 { name: "LICENSE", content: "" },
-                { name: "install.sh", content: `${registry.toLowerCase() === 'npm' ? registry.toLowerCase() + ' ' + 'install' : 'yarn add'}  ${APPLICATION_PACKAGES.join(' ')}` },
+                { name: "install.sh", content: "" },
                 ],
             folders:
                 ['model', 'controllers', 'routes', 'lib']
@@ -144,27 +155,15 @@ async function create(app, { packages, env }) {
     }
 
     else if (application.preset === "basic") {
-        //get the user indexFile for other fields of the application
-        let { registry, indexFile, license } = application;
-        //set the defaults 
-        indexFile = !indexFile ? 'index.js' : indexFile;
-        registry = !registry ? 'npm' : registry;
-        license = !license ? 'ISC' : license;
-
-
         //if the user want a blank project, create the directory and gitignore, env and readme, package.json
         const basicApplication = {
             files:
                 [{ name: 'package.json', content: JSON.stringify(pkg(application), null, 2) + '\n' },
                 { name: '.gitignore', content: gitIgnoreTemplate },
                 { name: 'README.md', content: readmeTemplate(APPLICATION_NAME) },
-                {
-                    name: indexFile.replace(/[^A-Za-z0-9.-]+/g, '-')
-                        .replace(/^[-_.]+|-+$/g, '')
-                        .toLowerCase(), content: ""
-                },
+                { name: STANDARDIZED_INDEX_FILE_NAME, content: "" },
                 { name: "LICENSE", content: license },
-                { name: "install.sh", content: `${registry.toLowerCase() === 'npm' ? registry.toLowerCase() + ' ' + 'install' : 'yarn add'}  ${APPLICATION_PACKAGES.join(' ')}` },
+                { name: "install.sh", content: INSTALLATION_SHELL_CONTENT },
                 ],
             folders:
                 ['model', 'controllers', 'routes', 'utils', 'middleware', 'lib']
@@ -173,32 +172,23 @@ async function create(app, { packages, env }) {
         executePreference(APPLICATION_NAME, basicApplication)
     }
 
-    else {
-        //get the user indexFile for other fields of the application
-        let { registry, indexFile, license } = application;
-        //set the defaults 
-        indexFile = !indexFile ? 'index.js' : indexFile;
-        registry = !registry ? 'npm' : registry;
-        license = !license ? 'ISC' : license;
-
-
-        //prompt user to select the option they want
+    else {        //prompt user to select the option they want
         const customApplicationOPtion = await prompts({
             type: 'multiselect',
             name: 'folders',
             message: 'Please select the desired folders',
             choices: [
-                { title: 'Config', value: 'config' },
-                { title: 'Controller', value: 'controller' },
-                { title: 'Database Migrations', value: 'migrations' },
-                { title: 'Files Backup', value: 'files' },
-                { title: 'Middleware', value: 'middleware' },
-                { title: 'Models', value: 'models' },
-                { title: 'Library and Classes', value: 'lib' },
-                { title: 'Routes', value: 'routes' },
-                { title: 'Email Templates', value: 'templates' },
-                { title: 'Utils', value: 'utils' },
-                { title: 'Views', value: 'view' },
+                { title: 'config', value: 'config' },
+                { title: 'controller', value: 'controller' },
+                { title: 'migrations', value: 'migrations' },
+                { title: 'files', value: 'files' },
+                { title: 'middleware', value: 'middleware' },
+                { title: 'models', value: 'models' },
+                { title: 'lib', value: 'lib' },
+                { title: 'routes', value: 'routes' },
+                { title: 'templates', value: 'templates' },
+                { title: 'utils', value: 'utils' },
+                { title: 'views', value: 'view' },
 
             ],
         });
@@ -212,13 +202,9 @@ async function create(app, { packages, env }) {
                 { name: '.env', content: ENVIRONMENT_VARIABLE },
                 { name: 'README.md', content: readmeTemplate(APPLICATION_NAME) },
                 { name: 'Contributing.md', content: "" },
-                {
-                    name: indexFile.replace(/[^A-Za-z0-9.-]+/g, '-')
-                        .replace(/^[-_.]+|-+$/g, '')
-                        .toLowerCase(), content: ""
-                },
+                { name: STANDARDIZED_INDEX_FILE_NAME, content: "" },
                 { name: "LICENSE", content: license },
-                { name: "install.sh", content: `${registry.toLowerCase() === 'npm' ? registry.toLowerCase() + ' ' + 'install' : 'yarn add'}  ${APPLICATION_PACKAGES.join(' ')}` },
+                { name: "install.sh", content: INSTALLATION_SHELL_CONTENT },
                 ],
             folders// computed from CustomApplicationOPtions
         }
