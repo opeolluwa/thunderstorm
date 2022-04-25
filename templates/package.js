@@ -7,8 +7,8 @@ const pkg = (fields) => ({
     "version": fields.version,
     "description": fields.description,
     "scripts": {
-        "start": `node ${fields.entry}`,
-        "dev": `nodemon ${fields.entry}`,
+        "start": `node ${fields.indexFile}`,
+        "dev": `nodemon ${fields.indexFile}`,
         "make":"bash install.sh"
     },
     "dependencies": {
