@@ -49,6 +49,21 @@ async function create(app, { packages, env }) {
         },
 
         {
+            //prompt user for language to use
+            type: 'text',
+            name: 'language',
+            message: 'include  (Y/n)',
+            initial: 'Y'
+        },
+        {
+            //prompt user to include nodemon as dev dependency
+            type: 'text',
+            name: 'use_nodemon',
+            message: 'include nodemon as dev dependency (Y/n)',
+            initial: 'y'
+        },
+
+        {
             //prompt user for application indexFile point default to (index.js)
             type: 'text',
             name: 'indexFile',
