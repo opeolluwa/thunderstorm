@@ -1,6 +1,6 @@
 # ThunderStorm
 
-A Command Line tool for quickly setting up server side application
+A Command Line tool for quickly setting up server-application
 
 ## Features
 
@@ -8,7 +8,7 @@ A Command Line tool for quickly setting up server side application
 - Lightweight
 - creates folders using best practice
 - initialize project with packages
-- ships with `package.json` and eliminates need for `npm init`
+- ships with `package.json` and eliminates the need for `npm init`
 
 ## Installation
 
@@ -86,14 +86,5 @@ See `contributing.md` for ways to get started.
 
 Please adhere to this project's `code of conduct`.
 
-## Feedback
 
-If you have any feedback, please reach out to us at adefemiadeoye@yahoo.com
 
-## 🚀 About Me
-
-**Hi, I'm Opeoluwa! 👋**
-
-A full stack developer devoted to building community projects...
-
-If you find ThunderStorm helpful, consider [buying me pizza 🍕](https://getfidia.com/pay/opeolluwa/open-source)
